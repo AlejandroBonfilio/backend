@@ -1,0 +1,20 @@
+[
+	{
+		"title": "Teclado",
+		"description": "Mecanico",
+		"price": 10000,
+		"thumbnail": "img1.jpg",
+		"code": "4567",
+		"stock": 16,
+		"id": 101
+	},
+	{
+		"title": "Mouse",
+		"description": "Razer 1500dpi",
+		"price": 20000,
+		"thumbnail": "img2.jpg",
+		"code": "4568",
+		"stock": 15,
+		"id": 102
+	}
+]
