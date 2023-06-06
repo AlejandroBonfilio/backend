@@ -117,24 +117,5 @@ class ProductManager {
     return maxId + 1;
   }
 }
-class Product {
-  constructor(title, description, price, thumbnail, code, stock) {
-    this.title = title;
-    this.description = description;
-    this.price = price;
-    this.thumbnail = thumbnail;
-    this.code = code;
-    this.stock = stock;
-    this.id = null;
-  }
-}
 
-// Crear una instancia de ProductManager
-const manager = new ProductManager();
-
-// Cargar productos desde el archivo al iniciar la aplicación
-manager.loadProductsFromFile();
-
-// Obtener todos los productos y mostrarlos en la consola
-const allProducts = manager.getProducts();
-console.log(allProducts);
+module.exports = ProductManager;
