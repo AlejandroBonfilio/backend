@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Productos</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+
+    function createProduct() {
+      var title = document.getElementById('title').value;
+      var description = document.getElementById('description').value;
+      // Obtener los demás campos del formulario según sea necesario
+
+      // Enviar los datos del producto a través de WebSockets
+      socket.emit('createProduct', { title: title, description: description });
+    }
+
+    function deleteProduct(productId) {
+      // Enviar el ID del producto a eliminar a través de WebSockets
+      socket.emit('deleteProduct', productId);
+    }
+
+    socket.on('updateProducts', function(products) {
+      var productList = document.getElementById('productList');
+      productList.innerHTML = '';
+
+      products.forEach(function(product) {
+        var listItem = document.createElement('li');
+        listItem.textContent = product.title;
+        productList.appendChild(listItem);
+      });
+    });
+
+    socket.on('productCreated', function(newProduct) {
+      var productList = document.getElementById('productList');
+      var listItem = document.createElement('li');
+      listItem.textContent = newProduct.title;
+      productList.appendChild(listItem);
+    });
+
+    socket.on('productDeleted', function(productId) {
+      var productList = document.getElementById('productList');
+      var listItem = productList.querySelector('[data-product-id="' + productId + '"]');
+      if (listItem) {
+        productList.removeChild(listItem);
+      }
+    });
+  </script>
+</head>
+<body>
+  <h1>Productos</h1>
+  <ul id="productList">
+    {{#each products}}
+    <li>{{this.title}}</li>
+    {{/each}}
+  </ul>
+
+  <h2>Crear producto</h2>
+  <form>
+    <label>Titulo</label>
+    <input type="text" id="title" required>
+    <br>
+    <label>Descripcion:</label>
+    <input type="text" id="description" required>
+    <br>
+    
+    <button type="button" onclick="createProduct()">Crear</button>
+  </form>
+
+  <h2>Eliminar producto</h2>
+  <form>
+    <label>N° ID:</label>
+    <input type="text" id="productId" required>
+    <br>
+    <button type="button" onclick="deleteProduct(document.getElementById('productId').value)">Eliminar</button>
+  </form>
+</body>
+</html>

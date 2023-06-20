@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Productos</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Conectarse al servidor de WebSockets
+    var socket = io();
+
+    // Escuchar el evento 'updateProducts' del servidor
+    socket.on('updateProducts', function(products) {
+      // Actualizar la lista de productos en la página
+      var productList = document.getElementById('productList');
+      productList.innerHTML = '';
+
+      products.forEach(function(product) {
+        var listItem = document.createElement('li');
+        listItem.textContent = product.title;
+        productList.appendChild(listItem);
+      });
+    });
+  </script>
+</head>
+<body>
+  {{{body}}}
+</body>
+</html>
