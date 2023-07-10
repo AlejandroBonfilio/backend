@@ -6,7 +6,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const fs = require('fs');
 const path = require('path');
-
+const mongoose = require('mongoose');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
@@ -77,3 +77,15 @@ function generateProductId() {
   // Aquí se muestra un ejemplo simple
   return Math.floor(Math.random() * 1000);
 }
+
+// Establecer la conexión a la base de datos
+mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });

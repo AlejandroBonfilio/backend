@@ -1,52 +1,65 @@
-const fs = require('fs');
-const path = require('path');
+const Product = require('../models/product');
 
-const productsFilePath = path.join(__dirname, '../db/products.json');
-
-const getAllProducts = (req, res) => {
-  const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf8'));
-  res.json(products);
-};
-
-const getProductById = (req, res) => {
-  const productId = req.params.pid;
-  const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf8'));
-  const product = products.find((p) => p.id === productId);
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ error: 'Producto no encontrado' });
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los productos' });
   }
 };
 
-const createProduct = (req, res) => {
-  const newProduct = req.body;
-  const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf8'));
-  products.push(newProduct);
-  fs.writeFileSync(productsFilePath, JSON.stringify(products, null, 2), 'utf8');
-  res.json(newProduct);
+const getProductById = async (req, res) => {
+  const productId = req.params.pid;
+  try {
+    const product = await Product.findById(productId);
+    if (product) {
+      res.json(product);
+    } else {
+      res.status(404).json({ error: 'Producto no encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el producto' });
+  }
 };
 
-const updateProduct = (req, res) => {
+const createProduct = async (req, res) => {
+  const newProductData = req.body;
+  try {
+    const newProduct = await Product.create(newProductData);
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear el producto' });
+  }
+};
+
+const updateProduct = async (req, res) => {
   const productId = req.params.pid;
   const updatedProductData = req.body;
-  const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf8'));
-  const updatedProducts = products.map((product) => {
-    if (product.id === productId) {
-      return { ...product, ...updatedProductData };
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(productId, updatedProductData, { new: true });
+    if (updatedProduct) {
+      res.json(updatedProduct);
+    } else {
+      res.status(404).json({ error: 'Producto no encontrado' });
     }
-    return product;
-  });
-  fs.writeFileSync(productsFilePath, JSON.stringify(updatedProducts, null, 2), 'utf8');
-  res.json(updatedProductData);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el producto' });
+  }
 };
 
-const deleteProduct = (req, res) => {
+const deleteProduct = async (req, res) => {
   const productId = req.params.pid;
-  const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf8'));
-  const updatedProducts = products.filter((product) => product.id !== productId);
-  fs.writeFileSync(productsFilePath, JSON.stringify(updatedProducts, null, 2), 'utf8');
-  res.json({ message: 'Producto eliminado correctamente' });
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+    if (deletedProduct) {
+      res.json({ message: 'Producto eliminado correctamente' });
+    } else {
+      res.status(404).json({ error: 'Producto no encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el producto' });
+  }
 };
 
 module.exports = {
