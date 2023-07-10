@@ -1,10 +1,12 @@
 const express = require('express');
-const cartController = require('../controllers/cartsController');
+const productController = require('../dao/controllers/productController');
 
 const router = express.Router();
 
-router.get('/:cid', cartController.getCartById);
-router.post('/', cartController.createCart);
-router.post('/:cid/product/:pid', cartController.addProductToCart);
+router.get('/', productController.getAllProducts);
+router.get('/:pid', productController.getProductById);
+router.post('/', productController.createProduct);
+router.put('/:pid', productController.updateProduct);
+router.delete('/:pid', productController.deleteProduct);
 
 module.exports = router;

@@ -1,0 +1,14 @@
+<!-- chat.handlebars -->
+<h1>Chat</h1>
+
+<div id="chat-messages">
+  {{#each messages}}
+    <p>{{user}}: {{message}}</p>
+  {{/each}}
+</div>
+
+<form id="chat-form">
+  <input type="text" id="user-input" placeholder="Correo del usuario">
+  <input type="text" id="message-input" placeholder="Mensaje">
+  <button type="submit">Enviar</button>
+</form>

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
-  // Definir los campos del esquema del carrito
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -17,8 +16,7 @@ const cartSchema = new mongoose.Schema({
       type: Number,
       required: true
     }
-  }],
-  // Otros campos del carrito, si los necesitas
+  }]
 });
 
 const Cart = mongoose.model('Cart', cartSchema);
