@@ -11,6 +11,8 @@ const path = require('path');
 const cartsController = require('./dao/controllers/cartsController');
 
 
+const session = require('express-session');
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
@@ -48,6 +50,16 @@ mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder
     console.error('Error connecting to MongoDB:', error);
   });
 
+
+// Configuración de middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: 'mySecretKey',
+  resave: false,
+  saveUninitialized: true,
+}));
+
+
 // Ruta para la vista de productos en tiempo real
 app.get('/realTimeProducts', (req, res) => {
   // Obtener los productos desde la base de datos y renderizar la vista
@@ -61,6 +73,32 @@ app.get('/realTimeProducts', (req, res) => {
       res.status(500).send('Internal Server Error');
     });
 });
+
+
+// Importar modelos y rutas
+const User = require('./dao/models/user');
+const authRoutes = require('./routes/authRoutes');
+const viewRoutes = require('./routes/viewRoutes');
+
+// Rutas públicas
+app.use('/auth', authRoutes);
+app.use('/', viewRoutes);
+
+// Middleware de autenticación para proteger rutas
+const requireAuth = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    return next();
+  }
+  return res.redirect('/auth/login');
+};
+
+// Ruta protegida que requiere autenticación
+app.get('/profile', requireAuth, (req, res) => {
+  // Obtener el usuario actual desde la base de datos y pasar sus datos a la vista
+  // const user = ...; // Implementar la lógica para obtener el usuario actual
+  res.render('profile', { user }); // Renderizar la vista de perfil con los datos del usuario
+});
+
 
 // Controlador o archivo de manejo de rutas de productos
 app.get('/api/products', async (req, res) => {

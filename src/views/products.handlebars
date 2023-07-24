@@ -1,4 +1,17 @@
-<h1>Productos</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Productos</title>
+</head>
+<body>
+  <h1>Bienvenido, {{ user.username }}!</h1>
+ 
+ <!-- Mostrar botón de logout -->
+  <form action="/auth/logout" method="post">
+    <button type="submit">Logout</button>
+  </form>
+
+<h2>Productos</h2>
 
 {{#each products}}
 <div class="product">
@@ -17,3 +30,5 @@
   </form>
 </div>
 {{/each}}
+</body>
+</html>
