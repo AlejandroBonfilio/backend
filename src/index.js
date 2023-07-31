@@ -12,6 +12,9 @@ const cartsController = require('./dao/controllers/cartsController');
 
 
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
+
+
 
 const app = express();
 const server = http.createServer(app);
@@ -20,6 +23,18 @@ const io = socketIO(server);
 const PORT = 8080;
 
 app.use(express.json());
+
+// Configuración de middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: 'mySecretKey',
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({ mongoUrl: 'mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority' })
+}));
+
+
+
 
 // Rutas de productos, carritos y mensajes
 app.use('/api/products', productsRouter);
@@ -37,6 +52,12 @@ app.engine('handlebars', exphbs.engine({
   // Otros ajustes y opciones que desees configurar
 }));
 app.set('view engine', 'handlebars');
+
+
+
+
+
+
 
 // Establecer conexión a MongoDB
 mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority', {
