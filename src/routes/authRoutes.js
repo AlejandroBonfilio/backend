@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../dao/models/user');
+const passport = require('passport');
 const authController = require('../dao/controllers/authController');
+const User = require('../dao/models/user');
 
 // Ruta para el formulario de registro
 router.get('/register', (req, res) => {
@@ -9,16 +10,7 @@ router.get('/register', (req, res) => {
 });
 
 // Ruta para manejar el registro de usuarios
-router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const user = await User.create({ username, password });
-    req.session.userId = user._id;
-    res.redirect('/profile');
-  } catch (err) {
-    res.status(500).send('Error al registrar al usuario');
-  }
-});
+router.post('/register', authController.registerUser);
 
 // Ruta para el formulario de inicio de sesión
 router.get('/login', (req, res) => {
@@ -26,32 +18,36 @@ router.get('/login', (req, res) => {
 });
 
 // Ruta para manejar el inicio de sesión de usuarios
-router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.render('login', { error: 'Usuario no encontrado' });
-      }
-  
-      user.comparePassword(password, (err, isMatch) => {
-        if (err) {
-          return res.render('login', { error: 'Error en el servidor' });
-        }
-        if (!isMatch) {
-          return res.render('login', { error: 'Contraseña incorrecta' });
-        }
-  
-        req.session.userId = user._id;
-        res.redirect('/products'); // Redirigir al usuario a la vista de productos
-      });
-    } catch (err) {
-      res.status(500).send('Error al iniciar sesión');
-    }
-  });
-  
+router.post('/login', authController.loginUser);
 
 // Ruta para cerrar sesión
 router.post('/logout', authController.logoutUser);
+
+// Ruta para autenticación con GitHub
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+// Ruta de callback para autenticación con GitHub
+router.get('/github/callback', passport.authenticate('github', {
+  successRedirect: '/products',
+  failureRedirect: '/auth/login',
+}));
+
+// Ruta para obtener el usuario actual
+router.get('/current', async (req, res) => {
+  try {
+    if (req.session.userId) {
+      const user = await User.findById(req.session.userId); // Buscar el usuario por su ID de sesión
+      if (user) {
+        res.json({ user }); // Devolver el usuario en la respuesta JSON
+      } else {
+        res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+    } else {
+      res.status(401).json({ message: 'Usuario no autenticado' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener el usuario actual' });
+  }
+});
 
 module.exports = router;

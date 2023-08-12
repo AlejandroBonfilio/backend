@@ -75,7 +75,15 @@ passport.use('register', new LocalStrategy({
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ username, password: hashedPassword });
+    const newUser = await User.create({
+      username,
+      password: hashedPassword,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      email: req.body.email,
+      age: req.body.age,
+      // Otros campos necesarios
+    });
     return done(null, newUser);
   } catch (error) {
     return done(error);
@@ -101,6 +109,21 @@ passport.use('login', new LocalStrategy(async (username, password, done) => {
   }
 }));
 
+// Configurar la estrategia de autenticación de GitHub
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: 'e83acc0e00b88c4b9b49',
+      clientSecret: '62666f33b3276b4444d19ddc6a56d6e557393991',
+      callbackURL: 'http://localhost:8080/api/session/githubcallback', // Cambiar esta URL según tu configuración
+    },
+    (accessToken, refreshToken, profile, done) => {
+      // Implementar la lógica para manejar la autenticación con GitHub aquí
+      done(null, profile);
+    }
+  )
+);
+
 // Serializar el usuario
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -112,6 +135,7 @@ passport.deserializeUser((id, done) => {
     done(err, user);
   });
 });
+
 
 
 router.post('/register', passport.authenticate('register', {
@@ -157,10 +181,6 @@ router.get(
     res.redirect('/products'); // Redirigir al usuario a la vista de productos o a la página que desees
   }
 );
-
-
-
-
 
 
 

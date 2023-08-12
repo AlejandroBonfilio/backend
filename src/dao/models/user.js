@@ -2,12 +2,16 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
+  first_name: { type: String, required: true },
+  last_name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  age: { type: Number, required: true },
   password: { type: String, required: true },
+  cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }, // Cambiar 'Cart' por el nombre de tu modelo de carrito si es diferente
   role: {
     type: String,
-    enum: ['admin', 'usuario'], // Roles posibles: 'admin' o 'usuario'
-    default: 'usuario', // Rol por defecto: 'usuario'
+    enum: ['admin', 'usuario'],
+    default: 'usuario',
   },
 });
 
