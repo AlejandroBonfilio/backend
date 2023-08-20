@@ -1,10 +1,16 @@
+require('dotenv').config();
+
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const GitHubStrategy = require('passport-github2').Strategy;
+const config = require('../../config');
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const GitHubStrategy = require('passport-github2').Strategy;
+
+
 
 
 const registerUser = async (req, res) => {
@@ -75,15 +81,7 @@ passport.use('register', new LocalStrategy({
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({
-      username,
-      password: hashedPassword,
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      email: req.body.email,
-      age: req.body.age,
-      // Otros campos necesarios
-    });
+    const newUser = await User.create({ username, password: hashedPassword });
     return done(null, newUser);
   } catch (error) {
     return done(error);
@@ -109,21 +107,6 @@ passport.use('login', new LocalStrategy(async (username, password, done) => {
   }
 }));
 
-// Configurar la estrategia de autenticación de GitHub
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: 'e83acc0e00b88c4b9b49',
-      clientSecret: '62666f33b3276b4444d19ddc6a56d6e557393991',
-      callbackURL: 'http://localhost:8080/api/session/githubcallback', // Cambiar esta URL según tu configuración
-    },
-    (accessToken, refreshToken, profile, done) => {
-      // Implementar la lógica para manejar la autenticación con GitHub aquí
-      done(null, profile);
-    }
-  )
-);
-
 // Serializar el usuario
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -135,7 +118,6 @@ passport.deserializeUser((id, done) => {
     done(err, user);
   });
 });
-
 
 
 router.post('/register', passport.authenticate('register', {
@@ -155,16 +137,17 @@ router.post('/login', passport.authenticate('login', {
 passport.use(
   new GitHubStrategy(
     {
-      clientID: 'e83acc0e00b88c4b9b49',
-      clientSecret: '62666f33b3276b4444d19ddc6a56d6e557393991',
-      callbackURL: 'http://localhost:8080/api/session/githubcallback', // Cambiar esta URL según tu configuración
+      clientID:config.githubClientID,
+      clientSecret:config.githubClientSecret,
+      callbackURL:'http://localhost:8080/api/session/githubcallback',
     },
     (accessToken, refreshToken, profile, done) => {
-     
+      // Implementar la lógica para manejar la autenticación con GitHub aquí
       done(null, profile);
     }
   )
 );
+
 
 // Middleware para inicializar Passport
 passport.initialize();
@@ -181,6 +164,10 @@ router.get(
     res.redirect('/products'); // Redirigir al usuario a la vista de productos o a la página que desees
   }
 );
+
+
+
+
 
 
 

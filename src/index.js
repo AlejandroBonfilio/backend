@@ -1,4 +1,7 @@
 const express = require('express');
+require('dotenv').config();
+const GitHubStrategy = require('passport-github2').Strategy;
+const config = require('./config');
 const exphbs = require('express-handlebars');
 const productsRouter = require('./routes/products');
 const cartsRouter = require('./routes/carts');
@@ -9,18 +12,38 @@ const mongoose = require('mongoose');
 const querystring = require('querystring');
 const path = require('path');
 const cartsController = require('./dao/controllers/cartsController');
+const passport = require('passport');
+
 
 
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
-
+// Importa tus controladores y estrategias de Passport
+const {
+  registerUser,
+  loginUser,
+  logoutUser,
+  router,
+} = require('./dao/controllers/authController');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
 const PORT = 8080;
+
+// Configura express-session
+app.use(session({
+  secret: 'mySecretKey',
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({ mongoUrl: 'mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority' })
+}));
+
+// Configura Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.json());
 
