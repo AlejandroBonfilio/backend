@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const { requireAdmin, requireUser } = require('../controllers/authorizationMiddleware'); // Importa el middleware de autorización
 
 const getAllProducts = async (req, res) => {
   try {
@@ -24,42 +25,51 @@ const getProductById = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-  const newProductData = req.body;
-  try {
-    const newProduct = await Product.create(newProductData);
-    res.status(201).json(newProduct);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al crear el producto' });
-  }
+  // Protege esta ruta con el middleware requireAdmin para permitir solo a los administradores crear productos
+  requireAdmin(req, res, async () => {
+    const newProductData = req.body;
+    try {
+      const newProduct = await Product.create(newProductData);
+      res.status(201).json(newProduct);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al crear el producto' });
+    }
+  });
 };
 
 const updateProduct = async (req, res) => {
-  const productId = req.params.pid;
-  const updatedProductData = req.body;
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(productId, updatedProductData, { new: true });
-    if (updatedProduct) {
-      res.json(updatedProduct);
-    } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+  // Protege esta ruta con el middleware requireAdmin para permitir solo a los administradores actualizar productos
+  requireAdmin(req, res, async () => {
+    const productId = req.params.pid;
+    const updatedProductData = req.body;
+    try {
+      const updatedProduct = await Product.findByIdAndUpdate(productId, updatedProductData, { new: true });
+      if (updatedProduct) {
+        res.json(updatedProduct);
+      } else {
+        res.status(404).json({ error: 'Producto no encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error al actualizar el producto' });
     }
-  } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar el producto' });
-  }
+  });
 };
 
 const deleteProduct = async (req, res) => {
-  const productId = req.params.pid;
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(productId);
-    if (deletedProduct) {
-      res.json({ message: 'Producto eliminado correctamente' });
-    } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+  // Protege esta ruta con el middleware requireAdmin para permitir solo a los administradores eliminar productos
+  requireAdmin(req, res, async () => {
+    const productId = req.params.pid;
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(productId);
+      if (deletedProduct) {
+        res.json({ message: 'Producto eliminado correctamente' });
+      } else {
+        res.status(404).json({ error: 'Producto no encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error al eliminar el producto' });
     }
-  } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar el producto' });
-  }
+  });
 };
 
 module.exports = {

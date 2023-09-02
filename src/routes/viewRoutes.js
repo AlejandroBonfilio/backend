@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const UserRepository = require('../repositories/userRepository');
+const UserDTO = require('../dtos/userDTO');
 
 // Ruta para la página de inicio
 router.get('/', (req, res) => {
@@ -7,13 +9,22 @@ router.get('/', (req, res) => {
 });
 
 // Ruta para el perfil del usuario (requiere autenticación)
-router.get('/profile', (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
+router.get('/profile', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const user = await UserRepository.findById(req.session.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    const userDTO = new UserDTO(user);
+    res.render('profile', { user: userDTO }); // Renderizar la vista de perfil con los datos del usuario en el DTO
+  } catch (error) {
+    res.status(500).send('Error al obtener el perfil del usuario');
   }
-  // Obtener el usuario actual desde la base de datos y pasar sus datos a la vista
-  // const user = ...; // Implementar la lógica para obtener el usuario actual
-  res.render('profile', { user }); // Renderizar la vista de perfil con los datos del usuario
 });
 
 module.exports = router;

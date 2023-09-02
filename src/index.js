@@ -14,10 +14,19 @@ const path = require('path');
 const cartsController = require('./dao/controllers/cartsController');
 const passport = require('passport');
 
-
+const Ticket = require('./ticket'); 
 
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+
+
+
+mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+
 
 // Importa tus controladores y estrategias de Passport
 const {
@@ -56,6 +65,10 @@ app.use(session({
   store: MongoStore.create({ mongoUrl: 'mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority' })
 }));
 
+
+// Importar las rutas de carritos y usarlas en la aplicación
+const cartRoutes = require('./routes/carts');
+app.use('/carts', cartRoutes);
 
 
 

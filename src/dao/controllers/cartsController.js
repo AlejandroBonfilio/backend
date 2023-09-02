@@ -1,4 +1,7 @@
 const Cart = require('../models/cart');
+const Ticket = require('../../ticket');
+const Product = require('../models/product');
+
 
 const getCartById = async (req, res) => {
   const cartId = req.params.cid;
@@ -26,6 +29,82 @@ const createCart = async (req, res) => {
     res.status(500).json({ error: 'Error al crear el carrito' });
   }
 };
+
+const purchaseCart = async (req, res) => {
+  const cartId = req.params.cid;
+try {
+  // Encontrar el carrito por su ID
+  const cart = await Cart.findById(cartId);
+  if (!cart) {
+    return res.status(404).json({ error: 'Carrito no encontrado' });
+  }
+
+  // Verificar el stock de los productos en el carrito
+  for (const productItem of cart.products) {
+    const product = await Product.findById(productItem.id);
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    // Verificar si hay suficiente stock
+    if (product.stock < productItem.quantity) {
+      return res.status(400).json({ error: 'No hay suficiente stock para un producto en el carrito' });
+    }
+
+    // Restar la cantidad del producto del stock
+    product.stock -= productItem.quantity;
+    await product.save();
+  }
+
+  // Calcular el monto total del carrito
+  const calculateTotalAmount = async (cart) => {
+    try {
+      const productIds = cart.products.map((productItem) => productItem.id);
+      
+      // Realizar consultas de búsqueda de productos de forma asíncrona
+      const productPromises = productIds.map(async (productId) => {
+        const product = await Product.findById(productId);
+        return product;
+      });
+  
+      // Esperar a que todas las consultas se resuelvan
+      const products = await Promise.all(productPromises);
+  
+      // Calcular el monto total
+      const totalAmount = products.reduce((total, product, index) => {
+        return total + product.price * cart.products[index].quantity;
+      }, 0);
+  
+      return totalAmount;
+    } catch (error) {
+      throw new Error('Error al calcular el monto total del carrito');
+    }
+  };
+
+  // Crear un nuevo ticket de compra
+  const ticket = new Ticket({
+    code: generateUniqueCode(), // Implementa una función para generar un código único
+    purchase_datetime: new Date(),
+    amount: totalAmount,
+    purchaser: req.user.email, // O el campo correcto que identifica al usuario
+  });
+
+  // Guardar el ticket en la base de datos
+  await ticket.save();
+
+  // Limpiar el carrito (eliminar todos los productos)
+  cart.products = [];
+  await cart.save();
+
+  res.status(200).json({ message: 'Compra exitosa' });
+} catch (error) {
+  res.status(500).json({ error: 'Error al realizar la compra' });
+}
+};
+
+
+
+
 
 const addProductToCart = async (req, res) => {
   const cartId = req.params.cid;
@@ -145,4 +224,5 @@ module.exports = {
   updateProductQuantity,
   deleteCart,
   getCartProducts,
+  purchaseCart,
 };
