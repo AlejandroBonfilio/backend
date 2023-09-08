@@ -1,7 +1,8 @@
 const Cart = require('../models/cart');
 const Ticket = require('../../ticket');
 const Product = require('../models/product');
-
+const errorMessages = require('../models/errorMessages'); // Importa tus mensajes de error
+const createError = require('../controllers/messagesController');
 
 const getCartById = async (req, res) => {
   const cartId = req.params.cid;
@@ -36,7 +37,9 @@ try {
   // Encontrar el carrito por su ID
   const cart = await Cart.findById(cartId);
   if (!cart) {
-    return res.status(404).json({ error: 'Carrito no encontrado' });
+    // Utiliza el customizador de errores para crear un error personalizado
+    const error = createError(errorMessages.cartNotFound, 404);
+    throw error; // Lanza el error
   }
 
   // Verificar el stock de los productos en el carrito
@@ -112,11 +115,16 @@ const addProductToCart = async (req, res) => {
   try {
     const cart = await Cart.findById(cartId);
     if (!cart) {
-      res.status(404).json({ error: 'Carrito no encontrado' });
+       // Utiliza el customizador de errores para crear un error personalizado
+       const error = createError(errorMessages.cartNotFound, 404);
+       throw error; // Lanza el error
     } else {
       const existingProduct = cart.products.find((p) => p.id === productId);
       if (existingProduct) {
-        existingProduct.quantity += 1; // Incrementar la cantidad del producto si ya existe en el carrito
+        existingProduct.quantity += 1;
+        // Utiliza el customizador de errores para crear un error personalizado
+      const error = createError(errorMessages.productAlreadyInCart, 400);
+      throw error; // Lanza el error // Incrementar la cantidad del producto si ya existe en el carrito
       } else {
         cart.products.push({ id: productId, quantity: 1 }); // Agregar el producto al carrito
       }

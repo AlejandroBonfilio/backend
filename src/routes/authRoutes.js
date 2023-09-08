@@ -7,6 +7,12 @@ const UserRepository = require('../repositories/userRepository');
 const authController = require('../dao/controllers/authController');
 const UserDTO = require('../dtos/userDTO');
 
+const mockingProducts = require('../dao/controllers/mockingProducts'); 
+
+// Ruta para obtener productos 
+router.get('/mockingproducts', mockingProducts.getMockProducts);
+
+
 // Ruta para el formulario de registro
 router.get('/register', (req, res) => {
   res.render('register');

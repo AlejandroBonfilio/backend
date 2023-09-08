@@ -20,11 +20,13 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 
+const routes = require('./routes/authRoutes');
 
 mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 
 
 
@@ -41,6 +43,11 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 const PORT = 8080;
+
+app.use('/api', routes);
+
+
+
 
 // Configura express-session
 app.use(session({
