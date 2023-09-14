@@ -1,5 +1,6 @@
 const express = require('express');
 require('dotenv').config();
+const app = express();
 const GitHubStrategy = require('passport-github2').Strategy;
 const config = require('./config');
 const exphbs = require('express-handlebars');
@@ -20,6 +21,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 
+
 const routes = require('./routes/authRoutes');
 
 mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority', {
@@ -27,6 +29,8 @@ mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder
   useUnifiedTopology: true,
 });
 
+const winston = require('winston');
+const getLogger = require('./logger');
 
 
 
@@ -38,7 +42,7 @@ const {
   router,
 } = require('./dao/controllers/authController');
 
-const app = express();
+
 const server = http.createServer(app);
 const io = socketIO(server);
 
@@ -71,6 +75,28 @@ app.use(session({
   saveUninitialized: true,
   store: MongoStore.create({ mongoUrl: 'mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority' })
 }));
+
+
+
+winston.createLogger({
+  levels: winston.config.npm.levels,
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.simple()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }), // Para guardar errores en un archivo
+  ],
+});
+
+app.get('/loggerTest', (req, res) => {
+  // Ejemplo de uso del logger
+  winston.error('Este es un mensaje de error');
+  res.send('Hola soy el logger');
+ 
+});
+
 
 
 // Importar las rutas de carritos y usarlas en la aplicación
