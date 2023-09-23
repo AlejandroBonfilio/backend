@@ -24,18 +24,20 @@ const getProductById = async (req, res) => {
   }
 };
 
+// controlador para crear un producto
 const createProduct = async (req, res) => {
-  // Protege esta ruta con el middleware requireAdmin para permitir solo a los administradores crear productos
-  requireAdmin(req, res, async () => {
-    const newProductData = req.body;
-    try {
-      const newProduct = await Product.create(newProductData);
-      res.status(201).json(newProduct);
-    } catch (error) {
-      res.status(500).json({ error: 'Error al crear el producto' });
-    }
-  });
+  const { name, description } = req.body;
+  const ownerId = req.user.role === 'premium' ? req.user.email : 'admin';
+
+  try {
+    const product = new Product({ name, description, owner: ownerId });
+    await product.save();
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear el producto' });
+  }
 };
+
 
 const updateProduct = async (req, res) => {
   // Protege esta ruta con el middleware requireAdmin para permitir solo a los administradores actualizar productos
@@ -55,22 +57,29 @@ const updateProduct = async (req, res) => {
   });
 };
 
+// Controlador para eliminar un producto
 const deleteProduct = async (req, res) => {
-  // Protege esta ruta con el middleware requireAdmin para permitir solo a los administradores eliminar productos
-  requireAdmin(req, res, async () => {
-    const productId = req.params.pid;
-    try {
-      const deletedProduct = await Product.findByIdAndDelete(productId);
-      if (deletedProduct) {
-        res.json({ message: 'Producto eliminado correctamente' });
-      } else {
-        res.status(404).json({ error: 'Producto no encontrado' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar el producto' });
+  const productId = req.params.productId;
+  const userRole = req.user.role;
+
+  try {
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
-  });
+
+    if (userRole === 'admin' || (userRole === 'premium' && product.owner === req.user.email)) {
+      await product.remove();
+      res.json({ message: 'Producto eliminado exitosamente' });
+    } else {
+      res.status(403).json({ error: 'No tienes permiso para eliminar este producto' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el producto' });
+  }
 };
+
 
 module.exports = {
   getAllProducts,

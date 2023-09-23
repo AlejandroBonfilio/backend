@@ -1,5 +1,6 @@
 const express = require('express');
 const cartController = require('../dao/controllers/cartsController');
+const userController = require('../dao/controllers/userController')
 
 const router = express.Router();
 
@@ -11,5 +12,6 @@ router.put('/:cid', cartController.updateCart);
 router.put('/:cid/products/:pid', cartController.updateProductQuantity);
 router.delete('/:cid', cartController.deleteCart);
 router.post('/:cid/purchase', cartController.purchaseCart);
+router.put('/api/users/premium/:uid', userController.toggleUserRole);
 
 module.exports = router;

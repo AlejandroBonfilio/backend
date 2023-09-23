@@ -20,6 +20,7 @@ const Ticket = require('./ticket');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
+require('./dao/controllers/password-reset');
 
 
 const routes = require('./routes/authRoutes');
@@ -126,6 +127,13 @@ app.set('view engine', 'handlebars');
 
 
 
+app.post('/forgot-password', (req, res) => {
+  // ...
+});
+
+app.post('/reset-password/:token', (req, res) => {
+  // ...
+});
 
 
 // Establecer conexión a MongoDB

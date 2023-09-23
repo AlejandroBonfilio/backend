@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }, // Cambiar 'Cart' por el nombre de tu modelo de carrito si es diferente
   role: {
     type: String,
-    enum: ['admin', 'usuario'],
+    enum: ['admin', 'usuario', 'premium'],
     default: 'usuario',
   },
 });

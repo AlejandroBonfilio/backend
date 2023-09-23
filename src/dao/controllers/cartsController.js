@@ -108,34 +108,35 @@ try {
 
 
 
-
 const addProductToCart = async (req, res) => {
   const cartId = req.params.cid;
   const productId = req.params.pid;
   try {
     const cart = await Cart.findById(cartId);
     if (!cart) {
-       // Utiliza el customizador de errores para crear un error personalizado
-       const error = createError(errorMessages.cartNotFound, 404);
-       throw error; // Lanza el error
+      res.status(404).json({ error: 'Carrito no encontrado' });
     } else {
-      const existingProduct = cart.products.find((p) => p.id === productId);
-      if (existingProduct) {
-        existingProduct.quantity += 1;
-        // Utiliza el customizador de errores para crear un error personalizado
-      const error = createError(errorMessages.productAlreadyInCart, 400);
-      throw error; // Lanza el error // Incrementar la cantidad del producto si ya existe en el carrito
+      // Verifica si el producto le pertenece al usuario premium
+      const product = await Product.findById(productId);
+      if (!product) {
+        res.status(404).json({ error: 'Producto no encontrado' });
+      } else if (req.user.role === 'premium' && product.owner === req.user.email) {
+        res.status(400).json({ error: 'No puedes agregar tu propio producto al carrito' });
       } else {
-        cart.products.push({ id: productId, quantity: 1 }); // Agregar el producto al carrito
+        const existingProduct = cart.products.find((p) => p.id === productId);
+        if (existingProduct) {
+          existingProduct.quantity += 1;
+        } else {
+          cart.products.push({ id: productId, quantity: 1 });
+        }
+        await cart.save();
+        res.json(cart.products);
       }
-      await cart.save();
-      res.json(cart.products);
     }
   } catch (error) {
     res.status(500).json({ error: 'Error al añadir el producto al carrito' });
   }
 };
-
 const deleteProductFromCart = async (req, res) => {
   const cartId = req.params.cid;
   const productId = req.params.pid;
