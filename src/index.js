@@ -15,6 +15,9 @@ const path = require('path');
 const cartsController = require('./dao/controllers/cartsController');
 const passport = require('passport');
 
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 const Ticket = require('./ticket'); 
 
 const session = require('express-session');
@@ -34,6 +37,26 @@ const winston = require('winston');
 const getLogger = require('./logger');
 
 
+// Define la configuración de Swagger
+const swaggerDefinition = {
+  info: {
+    title: 'Nombre de tu API',
+    version: '1.0.0',
+    description: 'Descripción de tu API',
+  },
+  basePath: '/', // Ruta base de tu API
+};
+
+const options = {
+  swaggerDefinition,
+  apis: ['./routes/products.js'], 
+  apis: ['./routes/carts.js'], 
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+// Agrega la documentación Swagger a tu aplicación
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Importa tus controladores y estrategias de Passport
 const {

@@ -1,3 +1,29 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Productos
+ *   description: Operaciones relacionadas con productos
+ */
+
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Obtiene la lista de productos
+ *     tags: [Productos]
+ *     responses:
+ *       200:
+ *         description: Lista de productos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ */
+
+
+
 const express = require('express');
 const productController = require('../dao/controllers/productController');
 
