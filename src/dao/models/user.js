@@ -13,6 +13,13 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'usuario', 'premium'],
     default: 'usuario',
   },
+  documents: [
+    {
+      name: String,       // Nombre del documento
+      reference: String,  // Enlace al documento
+    }
+  ],
+  last_connection: { type: Date } // Fecha y hora de la última conexión
 });
 
 // Método para encriptar la contraseña antes de guardarla en la base de datos
