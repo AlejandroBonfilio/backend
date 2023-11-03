@@ -73,9 +73,52 @@ const userController = {
   },
 };
 
+// Función para obtener todos los usuarios
+async function getAllUsers(req, res) {
+  try {
+    const users = await User.find({}, 'first_name last_name email role'); // Define los campos que deseas devolver
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener usuarios' });
+  }
+}
 
+// Función para eliminar usuarios inactivos
+async function deleteInactiveUsers(req, res) {
+  try {
+    // Calcula la fecha límite (por ejemplo, 2 días atrás)
+    const limitDate = new Date();
+    limitDate.setDate(limitDate.getDate() - 2);
+
+    // Elimina usuarios que no han tenido conexión desde limitDate
+    const result = await User.deleteMany({ last_connection: { $lt: limitDate } });
+    
+    // Envía un correo a los usuarios eliminados (código para enviar correos no incluido)
+    // ...
+
+    res.status(200).json({ message: 'Usuarios inactivos eliminados' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al eliminar usuarios inactivos' });
+  }
+}
+
+// Función para mostrar la vista de administrador
+function showAdminView(req, res) {
+  // Asegúrate de verificar si el usuario actual es un administrador antes de mostrar la vista
+  if (req.user && req.user.role === 'admin') {
+    // Renderiza la vista HTML o utiliza el motor de vistas que prefieras
+    res.render('admin-view'); // Ajusta el nombre de la vista y la lógica según tu stack tecnológico
+  } else {
+    res.status(403).json({ message: 'Acceso no autorizado' });
+  }
+}
 
 module.exports = {
   toggleUserRole,
   userController,
+  getAllUsers,
+  deleteInactiveUsers,
+  showAdminView,
+  
+
 };

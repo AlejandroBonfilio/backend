@@ -28,6 +28,26 @@ require('./dao/controllers/password-reset');
 
 const routes = require('./routes/authRoutes');
 
+
+
+
+// Importa tus rutas
+
+const productRoutes = require('./routes/products');
+const purchaseRoutes = require('./routes/purchase');
+
+
+const Product = require('./dao/models/product');
+const Purchase = require('./dao/models/purchase');
+
+// Usa tus rutas
+
+app.use('/api/products', productRoutes);
+app.use('/api/purchases', purchaseRoutes);
+
+
+
+
 mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -163,6 +183,8 @@ app.post('/reset-password/:token', (req, res) => {
 mongoose.connect('mongodb+srv://alejandrobonfilio:8tGhkpQs4xjoONxK@proyectocoder.4rmhp77.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
 })
   .then(() => {
     console.log('Connected to MongoDB');
@@ -197,7 +219,7 @@ app.get('/realTimeProducts', (req, res) => {
 
 
 // Importar modelos y rutas
-const User = require('./dao/models/user');
+
 const authRoutes = require('./routes/authRoutes');
 const viewRoutes = require('./routes/viewRoutes');
 
@@ -219,6 +241,9 @@ app.get('/profile', requireAuth, (req, res) => {
   // const user = ...; // Implementar la lógica para obtener el usuario actual
   res.render('profile', { user }); // Renderizar la vista de perfil con los datos del usuario
 });
+
+
+
 
 
 // Controlador o archivo de manejo de rutas de productos
