@@ -4,7 +4,7 @@
   "description": "proyecto de Alejandro Bonfilio Coderhouse curso Backend",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js"
     
   },
   "repository": {
