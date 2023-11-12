@@ -14,10 +14,10 @@ app.use(bodyParser.json());
 
 // Inicializar Nodemailer para el envío de correos electrónicos
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Cambia esto a tu proveedor de correo
+  service: 'Gmail', 
   auth: {
-    user: 'tu_correo@gmail.com', // Cambia esto a tu dirección de correo
-    pass: 'tu_contraseña' // Cambia esto a tu contraseña
+    user: 'tu_correo@gmail.com', 
+    pass: 'tu_contraseña' 
   }
 });
 

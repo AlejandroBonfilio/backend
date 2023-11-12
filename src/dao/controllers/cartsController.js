@@ -1,7 +1,7 @@
 const Cart = require('../models/cart');
 const Ticket = require('../../ticket');
 const Product = require('../models/product');
-const errorMessages = require('../models/errorMessages'); // Importa tus mensajes de error
+const errorMessages = require('../models/errorMessages'); 
 const createError = require('../controllers/messagesController');
 
 const getCartById = async (req, res) => {
@@ -86,10 +86,10 @@ try {
 
   // Crear un nuevo ticket de compra
   const ticket = new Ticket({
-    code: generateUniqueCode(), // Implementa una función para generar un código único
+    code: generateUniqueCode(), 
     purchase_datetime: new Date(),
     amount: totalAmount,
-    purchaser: req.user.email, // O el campo correcto que identifica al usuario
+    purchaser: req.user.email, 
   });
 
   // Guardar el ticket en la base de datos

@@ -53,10 +53,6 @@ const logoutUser = (req, res) => {
   });
 };
 
-// Resto del código de configuración de Passport...
-
-// Rutas de autenticación de GitHub...
-// ...
 
 router.post('/register', passport.authenticate('register', {
   successRedirect: '/profile',
@@ -70,8 +66,7 @@ router.post('/login', passport.authenticate('login', {
   failureFlash: true,
 }));
 
-// Middleware para inicializar Passport...
-// ...
+
 
 // Ruta para obtener el usuario actual
 router.get('/current', async (req, res) => {

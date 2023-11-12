@@ -21,7 +21,7 @@ router.get('/profile', async (req, res) => {
     }
 
     const userDTO = new UserDTO(user);
-    res.render('profile', { user: userDTO }); // Renderizar la vista de perfil con los datos del usuario en el DTO
+    res.render('profile', { user: userDTO }); 
   } catch (error) {
     res.status(500).send('Error al obtener el perfil del usuario');
   }

@@ -19,7 +19,7 @@ class UserRepository {
       return this.userDAO.delete(id);
     }
   
-    // Agrega métodos específicos de UserRepository si es necesario
+    
   }
   
   module.exports = UserRepository;

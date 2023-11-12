@@ -31,7 +31,7 @@ async function getProductDetails(req, res) {
 
 // Obtener el carrito de compras del usuario
 async function getCart(req, res) {
-  const userId = req.user.id; // Suponiendo que el usuario está autenticado y su ID se almacena en req.user.id
+  const userId = req.user.id; 
   try {
     const user = await User.findById(userId).populate('cart');
     if (!user) {
@@ -46,16 +46,14 @@ async function getCart(req, res) {
 
 // Iniciar el proceso de pago
 async function getCheckout(req, res) {
-  const userId = req.user.id; // Suponiendo que el usuario está autenticado y su ID se almacena en req.user.id
+  const userId = req.user.id;
   try {
     const user = await User.findById(userId).populate('cart');
     if (!user) {
       return res.status(404).send('Usuario no encontrado');
     }
 
-    // Lógica para procesar la compra, crear una nueva compra en la base de datos, etc.
-    
-    // Envía un correo electrónico de confirmación de compra
+   
     sendPurchaseConfirmationEmail(user.email);
 
     res.render('checkout', { user });
@@ -67,7 +65,7 @@ async function getCheckout(req, res) {
 
 // Mostrar historial de compras del usuario
 async function getOrderHistory(req, res) {
-  const userId = req.user.id; // Suponiendo que el usuario está autenticado y su ID se almacena en req.user.id
+  const userId = req.user.id; 
   try {
     const purchases = await Purchase.find({ user: userId });
     res.render('order-history', { purchases });
@@ -79,7 +77,7 @@ async function getOrderHistory(req, res) {
 
 // Mostrar perfil del usuario
 async function getUserProfile(req, res) {
-  const userId = req.user.id; // Suponiendo que el usuario está autenticado y su ID se almacena en req.user.id
+  const userId = req.user.id; 
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -95,7 +93,7 @@ async function getUserProfile(req, res) {
 // Función para enviar un correo electrónico de confirmación de compra
 function sendPurchaseConfirmationEmail(userEmail) {
   const transporter = nodemailer.createTransport({
-    // Configura tu transporte de correo electrónico
+    
   });
 
   const mailOptions = {

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Definir el esquema del producto
+// esquema del producto
 
 const productSchema = new mongoose.Schema({
   title: { type: String, required: true },

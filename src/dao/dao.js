@@ -1,9 +1,9 @@
 class DAO {
    
-    async getById(id) { /* Implementación */ }
-    async create(data) { /* Implementación */ }
-    async update(id, data) { /* Implementación */ }
-    async delete(id) { /* Implementación */ }
+    async getById(id) { }
+    async create(data) {}
+    async update(id, data) {  }
+    async delete(id) {  }
   }
   
   module.exports = DAO;

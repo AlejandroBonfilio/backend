@@ -8,7 +8,7 @@ const toggleUserRole = async (req, res) => {
     if (!user) {
       res.status(404).json({ error: 'Usuario no encontrado' });
     } else {
-      // Verificar si el usuario tiene permiso para cambiar el rol (por ejemplo, si es un administrador)
+      // Verificar si el usuario tiene permiso para cambiar el rol 
       if (req.user.role !== 'admin') {
         res.status(403).json({ error: 'No tienes permiso para cambiar el rol de este usuario' });
       } else {
@@ -93,8 +93,7 @@ async function deleteInactiveUsers(req, res) {
     // Elimina usuarios que no han tenido conexión desde limitDate
     const result = await User.deleteMany({ last_connection: { $lt: limitDate } });
     
-    // Envía un correo a los usuarios eliminados (código para enviar correos no incluido)
-    // ...
+  
 
     res.status(200).json({ message: 'Usuarios inactivos eliminados' });
   } catch (error) {
@@ -107,7 +106,7 @@ function showAdminView(req, res) {
   // Asegúrate de verificar si el usuario actual es un administrador antes de mostrar la vista
   if (req.user && req.user.role === 'admin') {
     // Renderiza la vista HTML o utiliza el motor de vistas que prefieras
-    res.render('admin-view'); // Ajusta el nombre de la vista y la lógica según tu stack tecnológico
+    res.render('admin-view'); 
   } else {
     res.status(403).json({ message: 'Acceso no autorizado' });
   }

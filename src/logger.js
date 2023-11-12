@@ -39,7 +39,7 @@ const productionLogger = createLogger({
   transports: [
     new transports.File({
       filename: 'errors.log',
-      level: 'error', // Registra desde el nivel 'error' en adelante en un archivo "errors.log"
+      level: 'error',
     }),
   ],
 });

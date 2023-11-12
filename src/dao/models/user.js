@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   age: { type: Number, required: true },
   password: { type: String, required: true },
-  cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }, // Cambiar 'Cart' por el nombre de tu modelo de carrito si es diferente
+  cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }, 
   role: {
     type: String,
     enum: ['admin', 'usuario', 'premium'],
@@ -15,11 +15,11 @@ const userSchema = new mongoose.Schema({
   },
   documents: [
     {
-      name: String,       // Nombre del documento
-      reference: String,  // Enlace al documento
+      name: String,       
+      reference: String,  
     }
   ],
-  last_connection: { type: Date } // Fecha y hora de la última conexión
+  last_connection: { type: Date }
 });
 
 // Método para encriptar la contraseña antes de guardarla en la base de datos

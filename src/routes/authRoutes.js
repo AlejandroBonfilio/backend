@@ -82,7 +82,7 @@ router.get('/current', async (req, res) => {
       const user = await UserRepository.findById(req.session.userId);
       if (user) {
         const userDTO = new UserDTO(user);
-        res.json({ user: userDTO }); // Devolver el usuario en el DTO como respuesta JSON
+        res.json({ user: userDTO }); 
       } else {
         res.status(404).json({ message: 'Usuario no encontrado' });
       }
